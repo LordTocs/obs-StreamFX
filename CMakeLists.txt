@@ -304,6 +304,8 @@ set(${PREFIX}ENABLE_FILTER_NVIDIA_FACE_TRACKING ON CACHE BOOL "Enable NVidia Fac
 set(${PREFIX}ENABLE_FILTER_SDF_EFFECTS ON CACHE BOOL "Enable SDF Effects Filter")
 set(${PREFIX}ENABLE_FILTER_SHADER ON CACHE BOOL "Enable Shader Filter")
 set(${PREFIX}ENABLE_FILTER_TRANSFORM ON CACHE BOOL "Enable Transform Filter")
+set(${PREFIX}ENABLE_FILTER_VIDEO_DENOISING ON CACHE BOOL "Enable Video Denoising filter")
+set(${PREFIX}ENABLE_FILTER_VIDEO_DENOISING_NVIDIA ON CACHE BOOL "Enable NVIDIA Video Noise Removal for Video Denoising Filter")
 
 ## Sources
 set(${PREFIX}ENABLE_SOURCE_MIRROR ON CACHE BOOL "Enable Mirror Source")
@@ -681,6 +683,26 @@ function(feature_filter_transform RESOLVE)
 	is_feature_enabled(FILTER_TRANSFORM T_CHECK)
 endfunction()
 
+function(feature_filter_video_denoising RESOLVE)
+	is_feature_enabled(FILTER_VIDEO_DENOISING T_CHECK)
+	if(RESOLVE AND T_CHECK)
+		# Verify that the requirements for the providers are available
+		if(NOT HAVE_NVIDIA_VFX_SDK)
+			message(WARNING "${LOGPREFIX}: 'NVIDIA Video Effects SDK' is missing. Disabling Video Denoising provider...")
+			set_feature_disabled(FILTER_VIDEO_DENOISING_NVIDIA ON)
+		endif()
+
+		# Verify that we have at least one provider for Video Denoising.
+		is_feature_enabled(FILTER_VIDEO_DENOISING T_CHECK_NVIDIA)
+		if (NOT T_CHECK_NVIDIA)
+			message(WARNING "${LOGPREFIX}: Video Denoising has no available providers. Disabling...")
+			set_feature_disabled(FILTER_VIDEO_DENOISING ON)
+		endif()
+	elseif(T_CHECK)
+		set(REQUIRE_NVIDIA_VFX_SDK ON PARENT_SCOPE)
+	endif()
+endfunction()
+
 function(feature_source_mirror RESOLVE)
 	is_feature_enabled(SOURCE_MIRROR T_CHECK)
 endfunction()
@@ -735,6 +757,7 @@ feature_filter_nvidia_face_tracking(OFF)
 feature_filter_sdf_effects(OFF)
 feature_filter_shader(OFF)
 feature_filter_transform(OFF)
+feature_filter_video_denoising(OFF)
 feature_source_mirror(OFF)
 feature_source_shader(OFF)
 feature_transition_shader(OFF)
@@ -879,6 +902,7 @@ feature_filter_nvidia_face_tracking(ON)
 feature_filter_sdf_effects(ON)
 feature_filter_shader(ON)
 feature_filter_transform(ON)
+feature_filter_video_denoising(ON)
 feature_source_mirror(ON)
 feature_source_shader(ON)
 feature_transition_shader(ON)
@@ -1315,6 +1339,24 @@ if(T_CHECK)
 	list(APPEND PROJECT_DEFINITIONS
 		ENABLE_FILTER_TRANSFORM
 	)
+endif()
+
+# Filter/Video Denoising
+is_feature_enabled(FILTER_VIDEO_DENOISING T_CHECK)
+if(T_CHECK)
+	list(APPEND PROJECT_PRIVATE_SOURCE
+		"source/filters/filter-video-denoising.hpp"
+		"source/filters/filter-video-denoising.cpp"
+	)
+	list(APPEND PROJECT_DEFINITIONS
+		ENABLE_FILTER_VIDEO_DENOISING
+	)
+	is_feature_enabled(FILTER_VIDEO_DENOISING_NVIDIA T_CHECK)
+	if (T_CHECK)
+		list(APPEND PROJECT_DEFINITIONS
+			ENABLE_FILTER_VIDEO_DENOISING_NVIDIA
+		)
+	endif()
 endif()
 
 # Source/Mirror
