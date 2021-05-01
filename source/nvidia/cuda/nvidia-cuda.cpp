@@ -89,7 +89,7 @@ nvidia::cuda::cuda::cuda() : _library()
 {
 	int32_t cuda_version = 0;
 
-	D_LOG_DEBUG("Initialization... (Addr: 0x%" PRIuPTR ")", this);
+	D_LOG_DEBUG("Initializing... (Addr: 0x%" PRIuPTR ")", this);
 
 	_library = util::library::load(std::string_view(CUDA_NAME));
 
