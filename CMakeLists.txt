@@ -849,17 +849,12 @@ endif()
 set(HAVE_NVIDIA_VFX_SDK OFF)
 if(REQUIRE_NVIDIA_VFX_SDK AND D_PLATFORM_WINDOWS)
 	if(EXISTS "${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/version.h")
-		set(HAVE_NVIDIA_VFX_SDK ON)
+		set(NVVFX_ROOT "${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk")
 	endif()
 
-	if(NOT TARGET NVIDIA::VFX)
-		add_library(NVIDIA::VFX IMPORTED INTERFACE)
-		target_include_directories(nvARProxy
-			INTERFACE
-				"${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/nvvfx/include/"
-				"${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/nvvfx/source/"
-		)
-	endif()
+	find_package(NVVFX)
+
+	set(HAVE_NVIDIA_VFX_SDK ${NVVFX_FOUND})
 endif()
 
 #- NVIDIA CUDA (Windows)
@@ -1018,7 +1013,7 @@ if(HAVE_NVIDIA_VFX_SDK)
 		"source/nvidia/vfx/nvidia-vfx.cpp"
 	)
 	list(APPEND PROJECT_LIBRARIES
-		NVIDIA::VFX
+		nvVFXProxy
 	)
 endif()
 
