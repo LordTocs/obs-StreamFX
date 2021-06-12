@@ -38,6 +38,7 @@ extern "C" {
 #define KEY_TIER "H265.Tier"
 #define KEY_LEVEL "H265.Level"
 
+using namespace streamfx::encoder::ffmpeg;
 using namespace streamfx::encoder::ffmpeg::handler;
 using namespace streamfx::encoder::codec::hevc;
 

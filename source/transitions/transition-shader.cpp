@@ -24,6 +24,7 @@
 
 #define ST "Transition.Shader"
 
+using namespace streamfx::transition;
 using namespace streamfx::transition::shader;
 
 static constexpr std::string_view HELP_URL =

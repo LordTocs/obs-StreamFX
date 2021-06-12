@@ -29,6 +29,7 @@ extern "C" {
 #include <obs-module.h>
 }
 
+using namespace streamfx::encoder::ffmpeg;
 using namespace streamfx::encoder::ffmpeg::handler;
 using namespace streamfx::encoder::codec::prores;
 

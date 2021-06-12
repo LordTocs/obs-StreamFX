@@ -170,7 +170,7 @@ void shader_factory::get_defaults2(obs_data_t* data)
 	gfx::shader::shader::defaults(data);
 }
 
-obs_properties_t* shader_factory::get_properties2(shader::shader_instance* data)
+obs_properties_t* shader_factory::get_properties2(shader_instance* data)
 {
 	auto pr = obs_properties_create();
 	obs_properties_set_param(pr, data, nullptr);

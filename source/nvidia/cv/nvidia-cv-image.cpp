@@ -40,6 +40,7 @@
 #define D_LOG_DEBUG(...) P_LOG_DEBUG(ST_PREFIX __VA_ARGS__)
 #endif
 
+using namespace nvidia::cv;
 using ::nvidia::cv::image;
 using ::nvidia::cv::result;
 
