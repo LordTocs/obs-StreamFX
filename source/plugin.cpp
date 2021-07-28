@@ -43,6 +43,9 @@
 #ifdef ENABLE_FILTER_NVIDIA_FACE_TRACKING
 #include "filters/filter-nv-face-tracking.hpp"
 #endif
+#ifdef ENABLE_FILTER_NVIDIA_BACKGROUND_REMOVAL
+#include "filters/filter-nv-background-removal.hpp"
+#endif
 #ifdef ENABLE_FILTER_SDF_EFFECTS
 #include "filters/filter-sdf-effects.hpp"
 #endif
@@ -138,6 +141,9 @@ try {
 #ifdef ENABLE_FILTER_NVIDIA_FACE_TRACKING
 		streamfx::filter::nvidia::face_tracking_factory::initialize();
 #endif
+#ifdef ENABLE_FILTER_NVIDIA_BACKGROUND_REMOVAL
+		streamfx::filter::nvidia::background_removal_factory::initialize();
+#endif
 #ifdef ENABLE_FILTER_SDF_EFFECTS
 		streamfx::filter::sdf_effects::sdf_effects_factory::initialize();
 #endif
@@ -223,6 +229,9 @@ try {
 #endif
 #ifdef ENABLE_FILTER_NVIDIA_FACE_TRACKING
 		streamfx::filter::nvidia::face_tracking_factory::finalize();
+#endif
+#ifdef ENABLE_FILTER_NVIDIA_BACKGROUND_REMOVAL
+		streamfx::filter::nvidia::background_removal_factory::finalize();
 #endif
 #ifdef ENABLE_FILTER_SDF_EFFECTS
 		streamfx::filter::sdf_effects::sdf_effects_factory::finalize();

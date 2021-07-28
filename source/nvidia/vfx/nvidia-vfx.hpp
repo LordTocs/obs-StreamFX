@@ -81,7 +81,7 @@ namespace nvidia::vfx {
 
 		public:
 		NVVFX_DEFINE_FUNCTION(NvVFX_GetVersion, uint32_t* version);
-		NVVFX_DEFINE_FUNCTION(NvVFX_CreateEffect, handle_t* effect);
+		NVVFX_DEFINE_FUNCTION(NvVFX_CreateEffect, effect_t effect_name, handle_t* effect);
 		NVVFX_DEFINE_FUNCTION(NvVFX_DestroyEffect, handle_t effect);
 		NVVFX_DEFINE_FUNCTION(NvVFX_SetU32, handle_t effect, parameter_t paramName, uint32_t val);
 		NVVFX_DEFINE_FUNCTION(NvVFX_SetS32, handle_t effect, parameter_t paramName, int32_t val);

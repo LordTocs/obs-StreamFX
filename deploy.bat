@@ -1,0 +1,1 @@
+xcopy F:\programming\streamstuff\obs-StreamFX\build\Release\StreamFX.dll C:\Users\tocs1\Desktop\Obs-portable\obs-plugins\64bit\StreamFX.dll

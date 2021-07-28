@@ -190,11 +190,11 @@ void video_denoising_instance::video_render(gs_effect_t* effect)
 			// Render
 			bool srgb = gs_framebuffer_srgb_enabled();
 			gs_enable_framebuffer_srgb(gs_get_linear_srgb());
-			if (gs_get_linear_srgb()) {
-				obs_source_process_filter_end_srgb(_self, obs_get_base_effect(OBS_EFFECT_DEFAULT), width, height);
-			} else {
-				obs_source_process_filter_end(_self, obs_get_base_effect(OBS_EFFECT_DEFAULT), width, height);
-			}
+			//if (gs_get_linear_srgb()) {
+			//	obs_source_process_filter_end_srgb(_self, obs_get_base_effect(OBS_EFFECT_DEFAULT), width, height);
+			//} else {
+			obs_source_process_filter_end(_self, obs_get_base_effect(OBS_EFFECT_DEFAULT), width, height);
+			//}
 			gs_enable_framebuffer_srgb(srgb);
 
 			// Reset GPU state

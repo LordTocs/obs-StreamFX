@@ -301,11 +301,13 @@ set(${PREFIX}ENABLE_FILTER_COLOR_GRADE ON CACHE BOOL "Enable Color Grade Filter"
 set(${PREFIX}ENABLE_FILTER_DISPLACEMENT ON CACHE BOOL "Enable Displacement Filter")
 set(${PREFIX}ENABLE_FILTER_DYNAMIC_MASK ON CACHE BOOL "Enable Dynamic Mask Filter")
 set(${PREFIX}ENABLE_FILTER_NVIDIA_FACE_TRACKING ON CACHE BOOL "Enable NVidia Face Tracking Filter")
+set(${PREFIX}ENABLE_FILTER_NVIDIA_BACKGROUND_REMOVAL ON CACHE BOOL "Enable NVIDIA Background Removal")
 set(${PREFIX}ENABLE_FILTER_SDF_EFFECTS ON CACHE BOOL "Enable SDF Effects Filter")
 set(${PREFIX}ENABLE_FILTER_SHADER ON CACHE BOOL "Enable Shader Filter")
 set(${PREFIX}ENABLE_FILTER_TRANSFORM ON CACHE BOOL "Enable Transform Filter")
 set(${PREFIX}ENABLE_FILTER_VIDEO_DENOISING ON CACHE BOOL "Enable Video Denoising filter")
 set(${PREFIX}ENABLE_FILTER_VIDEO_DENOISING_NVIDIA ON CACHE BOOL "Enable NVIDIA Video Noise Removal for Video Denoising Filter")
+
 
 ## Sources
 set(${PREFIX}ENABLE_SOURCE_MIRROR ON CACHE BOOL "Enable Mirror Source")
@@ -671,6 +673,25 @@ function(feature_filter_nvidia_face_tracking RESOLVE)
 	endif()
 endfunction()
 
+function(feature_filter_nvidia_background_removal RESOLVE)
+	is_feature_enabled(FILTER_NVIDIA_BACKGROUND_REMOVAL T_CHECK)
+	if(RESOLVE AND T_CHECK)
+		if(NOT D_PLATFORM_WINDOWS)
+			message(WARNING "${LOGPREFIX}: NVIDIA Background Removal requires Windows. Disabling...")
+			set_feature_disabled(FILTER_NVIDIA_BACKGROUND_REMOVAL ON)
+		elseif(NOT HAVE_NVIDIA_VFX_SDK)
+			message(WARNING "${LOGPREFIX}: NVIDIA Face Tracking requires NVIDIA VFX SDK. Disabling...")
+			set_feature_disabled(FILTER_NVIDIA_BACKGROUND_REMOVAL ON)
+		elseif(NOT HAVE_NVIDIA_CUDA)
+			message(WARNING "${LOGPREFIX}: NVIDIA Face Tracking requires NVIDIA CUDA. Disabling...")
+			set_feature_disabled(FILTER_NVIDIA_BACKGROUND_REMOVAL ON)
+		endif()
+	elseif(T_CHECK)
+		set(REQUIRE_NVIDIA_VFX_SDK ON PARENT_SCOPE)
+		set(REQUIRE_NVIDIA_CUDA ON PARENT_SCOPE)
+	endif()
+endfunction()
+
 function(feature_filter_sdf_effects RESOLVE)
 	is_feature_enabled(FILTER_SDF_EFFECTS T_CHECK)
 endfunction()
@@ -754,6 +775,7 @@ feature_filter_color_grade(OFF)
 feature_filter_displacement(OFF)
 feature_filter_dynamic_mask(OFF)
 feature_filter_nvidia_face_tracking(OFF)
+feature_filter_nvidia_background_removal(OFF)
 feature_filter_sdf_effects(OFF)
 feature_filter_shader(OFF)
 feature_filter_transform(OFF)
@@ -894,6 +916,7 @@ feature_filter_color_grade(ON)
 feature_filter_displacement(ON)
 feature_filter_dynamic_mask(ON)
 feature_filter_nvidia_face_tracking(ON)
+feature_filter_nvidia_background_removal(ON)
 feature_filter_sdf_effects(ON)
 feature_filter_shader(ON)
 feature_filter_transform(ON)
@@ -1292,6 +1315,18 @@ if(T_CHECK)
 	)
 	list(APPEND PROJECT_DEFINITIONS
 		ENABLE_FILTER_NVIDIA_FACE_TRACKING
+	)
+endif()
+
+# Filter/NVIDIA Background Removal
+is_feature_enabled(FILTER_NVIDIA_BACKGROUND_REMOVAL T_CHECK)
+if(T_CHECK)
+	list(APPEND PROJECT_PRIVATE_SOURCE
+		"source/filters/filter-nv-background-removal.hpp"
+		"source/filters/filter-nv-background-removal.cpp"
+	)
+	list(APPEND PROJECT_DEFINITIONS
+		ENABLE_FILTER_NVIDIA_BACKGROUND_REMOVAL
 	)
 endif()
 
