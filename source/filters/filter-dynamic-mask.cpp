@@ -46,6 +46,7 @@
 #define ST_I18N_CHANNEL_INPUT "Filter.DynamicMask.Channel.Input"
 #define ST_KEY_CHANNEL_INPUT "Filter.DynamicMask.Channel.Input"
 
+using namespace streamfx;
 using namespace streamfx::filter::dynamic_mask;
 
 static constexpr std::string_view HELP_URL = "https://github.com/Xaymar/obs-StreamFX/wiki/Filter-Dynamic-Mask";

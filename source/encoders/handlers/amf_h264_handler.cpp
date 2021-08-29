@@ -38,6 +38,7 @@ extern "C" {
 #define ST_KEY_PROFILE "H264.Profile"
 #define ST_KEY_LEVEL "H264.Level"
 
+using namespace streamfx::encoder::ffmpeg;
 using namespace streamfx::encoder::ffmpeg::handler;
 using namespace streamfx::encoder::codec::h264;
 

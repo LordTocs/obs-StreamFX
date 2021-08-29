@@ -40,6 +40,7 @@
 #define D_LOG_DEBUG(...) P_LOG_DEBUG(ST_PREFIX __VA_ARGS__)
 #endif
 
+using namespace streamfx::nvidia::cv;
 using ::streamfx::nvidia::cv::image;
 using ::streamfx::nvidia::cv::result;
 

@@ -24,6 +24,7 @@
 
 #define ST_I18N "Filter.Shader"
 
+using namespace streamfx::filter;
 using namespace streamfx::filter::shader;
 
 static constexpr std::string_view HELP_URL =

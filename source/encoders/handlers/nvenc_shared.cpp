@@ -90,6 +90,7 @@ extern "C" {
 #define ST_KEY_OTHER_ACCESSUNITDELIMITER "Other.AccessUnitDelimiter"
 #define ST_KEY_OTHER_DECODEDPICTUREBUFFERSIZE "Other.DecodedPictureBufferSize"
 
+using namespace streamfx::encoder::ffmpeg;
 using namespace streamfx::encoder::ffmpeg::handler;
 
 std::map<nvenc::preset, std::string> nvenc::presets{
