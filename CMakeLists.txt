@@ -306,6 +306,8 @@ set(${PREFIX}ENABLE_FILTER_SHADER ON CACHE BOOL "Enable Shader Filter")
 set(${PREFIX}ENABLE_FILTER_TRANSFORM ON CACHE BOOL "Enable Transform Filter")
 set(${PREFIX}ENABLE_FILTER_VIDEO_SUPERRESOLUTION ON CACHE BOOL "Enable Video Super-Resolution filter")
 set(${PREFIX}ENABLE_FILTER_VIDEO_SUPERRESOLUTION_NVIDIA ON CACHE BOOL "Enable NVIDIA Video Super-Resolution for Video Super-Resolution Filter")
+set(${PREFIX}ENABLE_FILTER_BACKGROUND_REMOVAL ON CACHE BOOL "Enable Background Removal Filter")
+set(${PREFIX}ENABLE_FILTER_BACKGROUND_REMOVAL_NVIDIA ON CACHE BOOL "Enable NVIDIA Background Removal Filter")
 
 ## Sources
 set(${PREFIX}ENABLE_SOURCE_MIRROR ON CACHE BOOL "Enable Mirror Source")
@@ -703,6 +705,27 @@ function(feature_filter_video_superresolution RESOLVE)
 	endif()
 endfunction()
 
+function(feature_filter_background_removal RESOLVE)
+	is_feature_enabled(FILTER_BACKGROUND_REMOVAL T_CHECK)
+	if(RESOLVE AND T_CHECK)
+		# Verify that the requirements for the providers are available
+		if(NOT HAVE_NVIDIA_VFX_SDK)
+			message(WARNING "${LOGPREFIX}: 'NVIDIA Video Effects SDK' is missing. Disabling Background Removal provider...")
+			set_feature_disabled(FILTER_BACKGROUND_REMOVAL_NVIDIA ON)
+		endif()
+
+		# Verify that we have at least one provider for Video Super-Resolution.
+		is_feature_enabled(FILTER_BACKGROUND_REMOVAL_NVIDIA T_CHECK_NVIDIA)
+		if (NOT T_CHECK_NVIDIA)
+			message(WARNING "${LOGPREFIX}: Background Removal has no available providers. Disabling...")
+			set_feature_disabled(FILTER_BACKGROUND_REMOVAL ON)
+		endif()
+	elseif(T_CHECK)
+		set(REQUIRE_NVIDIA_VFX_SDK ON PARENT_SCOPE)
+	endif()
+endfunction()
+
+
 function(feature_source_mirror RESOLVE)
 	is_feature_enabled(SOURCE_MIRROR T_CHECK)
 endfunction()
@@ -758,6 +781,7 @@ feature_filter_sdf_effects(OFF)
 feature_filter_shader(OFF)
 feature_filter_transform(OFF)
 feature_filter_video_superresolution(OFF)
+feature_filter_background_removal(OFF)
 feature_source_mirror(OFF)
 feature_source_shader(OFF)
 feature_transition_shader(OFF)
@@ -849,17 +873,13 @@ endif()
 set(HAVE_NVIDIA_VFX_SDK OFF)
 if(REQUIRE_NVIDIA_VFX_SDK AND D_PLATFORM_WINDOWS)
 	if(EXISTS "${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/version.h")
-		set(HAVE_NVIDIA_VFX_SDK ON)
+		#set(HAVE_NVIDIA_VFX_SDK ON)
+		set(NVAR_ROOT "${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk")
 	endif()
 
-	if(NOT TARGET NVIDIA::VFX)
-		add_library(NVIDIA::VFX IMPORTED INTERFACE)
-		target_include_directories(nvARProxy
-			INTERFACE
-				"${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/nvvfx/include/"
-				"${PROJECT_SOURCE_DIR}/third-party/nvidia-maxine-vfx-sdk/nvvfx/source/"
-		)
-	endif()
+	find_package(NVVFX)
+
+	set(HAVE_NVIDIA_VFX_SDK ${NVVFX_FOUND})
 endif()
 
 #- NVIDIA CUDA (Windows)
@@ -903,6 +923,7 @@ feature_filter_sdf_effects(ON)
 feature_filter_shader(ON)
 feature_filter_transform(ON)
 feature_filter_video_superresolution(ON)
+feature_filter_background_removal(ON)
 feature_source_mirror(ON)
 feature_source_shader(ON)
 feature_transition_shader(ON)
@@ -1018,9 +1039,11 @@ if(HAVE_NVIDIA_VFX_SDK)
 		"source/nvidia/vfx/nvidia-vfx.cpp"
 		"source/nvidia/vfx/nvidia-vfx-superresolution.hpp"
 		"source/nvidia/vfx/nvidia-vfx-superresolution.cpp"
+		"source/nvidia/vfx/nvidia-vfx-background-removal.hpp"
+		"source/nvidia/vfx/nvidia-vfx-background-removal.cpp"
 	)
 	list(APPEND PROJECT_LIBRARIES
-		NVIDIA::VFX
+		nvVFXProxy
 	)
 endif()
 
@@ -1361,6 +1384,24 @@ if(T_CHECK)
 	if (T_CHECK)
 		list(APPEND PROJECT_DEFINITIONS
 			ENABLE_FILTER_VIDEO_SUPERRESOLUTION_NVIDIA
+		)
+	endif()
+endif()
+
+# Filter/Background Removal
+is_feature_enabled(FILTER_BACKGROUND_REMOVAL T_CHECK)
+if(T_CHECK)
+	list(APPEND PROJECT_PRIVATE_SOURCE
+		"source/filters/filter-background-removal.hpp"
+		"source/filters/filter-background-removal.cpp"
+	)
+	list(APPEND PROJECT_DEFINITIONS
+		ENABLE_FILTER_BACKGROUND_REMOVAL
+	)
+	is_feature_enabled(FILTER_BACKGROUND_REMOVAL_NVIDIA T_CHECK)
+	if (T_CHECK)
+		list(APPEND PROJECT_DEFINITIONS
+			ENABLE_FILTER_BACKGROUND_REMOVAL_NVIDIA
 		)
 	endif()
 endif()

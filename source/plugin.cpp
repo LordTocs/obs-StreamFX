@@ -59,6 +59,9 @@
 #ifdef ENABLE_FILTER_VIDEO_SUPERRESOLUTION
 #include "filters/filter-video-superresolution.hpp"
 #endif
+#ifdef ENABLE_FILTER_BACKGROUND_REMOVAL
+#include "filters/filter-background-removal.hpp"
+#endif
 
 #ifdef ENABLE_SOURCE_MIRROR
 #include "sources/source-mirror.hpp"
@@ -163,6 +166,9 @@ try {
 #endif
 #ifdef ENABLE_FILTER_VIDEO_SUPERRESOLUTION
 		streamfx::filter::video_superresolution::video_superresolution_factory::initialize();
+#endif
+#ifdef ENABLE_FILTER_BACKGROUND_REMOVAL
+		streamfx::filter::background_removal::background_removal_factory::initialize();
 #endif
 	}
 
